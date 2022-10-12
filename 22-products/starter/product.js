@@ -1,13 +1,13 @@
 const productDOM = document.querySelector(".product");
-const url =
-  "https://course-api.com/javascript-store-single-product?id=rec43w3ipXvP28vog";
+const url = "https://course-api.com/javascript-store-single-product";
+const colors = document.querySelector(".colors");
 
 const fetchProduct = async () => {
   try {
-    productDOM.innerHTML = `<4 class="product-loading">Loading...</h4>`;
+    productDOM.innerHTML = `<h4 class="product-loading">Loading...</h4>`;
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
-    const response = await fetch(url);
+    const response = await fetch(`${url}?id=${id}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -16,23 +16,36 @@ const fetchProduct = async () => {
 };
 
 const displayProduct = (product) => {
-  product.map(() => {
-    return `<section class="product">
-      <div class="product-wrapper">
-        <img src="./couch.jpg" class="img" alt="" />
+  const {
+    company,
+    colors,
+    description,
+    name: title,
+    price,
+    image,
+  } = product.fields;
+  const formatPrice = price / 100;
+  const { url: img } = image[0];
+  document.title = title.toUpperCase();
+  //colors
+  const colorList = colors
+    .map((color) => {
+      return `<span class="product-color" style="background: ${color}"></span>`;
+    })
+    .join("");
+  productDOM.innerHTML = `<div class="product-wrapper">
+        <img src="${img}" class="img" alt="${title}" />
         <div class="product-info">
-          <h3>title</h3>
-          <h5>company</h5>
-          <span>$9.99</span>
+          <h3>${title}</h3>
+          <h5>${company}</h5>
+          <span>$${formatPrice}</span>
           <div class="colors">
-            <span class="product-color" style="background: red"></span>
+           ${colorList}
           </div>
-          <p>text</p>
-          <buttom class="btn">add to cart</buttom>
+          <p>${description}</p>
+          <button class="btn">add to cart</button>
         </div>
-      </div>
-    </section>`;
-  });
+      </div>`;
 };
 
 const start = async () => {
